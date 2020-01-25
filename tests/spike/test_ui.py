@@ -16,6 +16,6 @@ def application():
     root.destroy()
 
 
-@pytest.mark.skipif(can_import_tk, reason="Cannot import tkinter")
+@pytest.mark.skipif(can_import_tk is False, reason="Cannot import tkinter")
 def test_openwindow(application):
     assert application.master.winfo_exists()
