@@ -1,6 +1,10 @@
-
+import tkinter as tk
+from ui import Application
 
 def main():
-    pass
+    root = tk.Tk()
+    app = Application(master=root)
+    app.mainloop()
+
 
 main()
