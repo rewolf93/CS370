@@ -1,9 +1,11 @@
 import pytest
-from spike import ui
 
 can_import_tk = True
 try:
+    from spike import ui
     import tkinter as tk
+except ModuleNotFoundError:
+    can_import_tk = False
 except ImportError:
     can_import_tk = False
 
