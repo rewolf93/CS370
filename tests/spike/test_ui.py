@@ -1,6 +1,13 @@
 import pytest
-import tkinter as tk
-from spike import ui
+
+can_import_tk = True
+try:
+    from spike import ui
+    import tkinter as tk
+except ModuleNotFoundError:
+    can_import_tk = False
+except ImportError:
+    can_import_tk = False
 
 
 @pytest.fixture()
@@ -11,5 +18,6 @@ def application():
     root.destroy()
 
 
+@pytest.mark.skipif(can_import_tk is False, reason="Cannot import tkinter")
 def test_openwindow(application):
     assert application.master.winfo_exists()
