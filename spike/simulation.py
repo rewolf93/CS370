@@ -21,12 +21,12 @@ class Physics:
         if np.issubdtype(disp_matrix[0][0], np.signedinteger):
             disp_matrix = disp_matrix.astype(float)
         print(f'accel_vec: {accel_vec}')
-        da = cls.degreeprojectxy(accel_vec, heading=heading)
-        print(f'da: {da}')
+        a = cls.degreeprojectxy(accel_vec, heading=heading)
+        print(f'a: {a}')
         print(f'heading: {heading}')
         print(f'accel_vec: {accel_vec}')
-        disp_matrix[0][0] = (disp_matrix[1][0] * 2 + da[0])/2
-        disp_matrix[1][0] = (disp_matrix[1][0] * 2 + da[1])/2
+        disp_matrix[0][0] = a[0]/2
+        disp_matrix[1][0] = a[1]/2
 
     @classmethod
     def displacement(cls, arry, heading, dt=0.05):
