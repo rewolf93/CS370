@@ -9,27 +9,22 @@ class Physics:
     '''
 
     @classmethod
-    def accelerate(cls, disp_matrix, accel_vec, heading=0):
+    def accelerate(cls, disp_matrix, accel_vec):
         '''
-        Takes a displacement matrix, acceleration vector, and current heading
-        The heading is the angle between the standard axis and the tilted axis
-        of the object
+        Takes a displacement matrix acceleration vector
         Updates the displacement matrix in place
         '''
         if np.issubdtype(accel_vec[0], np.signedinteger):
             accel_vec = accel_vec.astype(float)
         if np.issubdtype(disp_matrix[0][0], np.signedinteger):
             disp_matrix = disp_matrix.astype(float)
-        print(f'accel_vec: {accel_vec}')
-        a = cls.degreeprojectxy(accel_vec, heading=heading)
-        print(f'a: {a}')
-        print(f'heading: {heading}')
-        print(f'accel_vec: {accel_vec}')
-        disp_matrix[0][0] = a[0]/2
-        disp_matrix[1][0] = a[1]/2
+        a = cls.degreeprojectxy(accel_vec) / 2
+        disp_matrix[0][0] = a[0]
+        disp_matrix[1][0] = a[1]
+        return disp_matrix
 
     @classmethod
-    def displacement(cls, arry, heading, dt=0.05):
+    def displacement(cls, disp_mtrx, heading, dt=0.05):
         '''
         Calculates the displacement given a matrix of coefficients
         for the equation s = at^2 + bt^1 + c
@@ -38,15 +33,21 @@ class Physics:
         by cx and cy
         Returns an updated matrix and heading
         '''
-        timevector = np.array([dt**i for i in range(arry.shape[1]-1, -1, -1)])
+        arry = np.copy(disp_mtrx)
+        timevector = np.array([
+                     dt**i for i in range(arry.shape[1]-1, -1, -1)])
+        a_vec = np.array([arry[0][0], arry[1][0]])
+        a_vec = cls.rotateaxis(a_vec, heading)
+        arry[0][0] = a_vec[0]
+        arry[1][0] = a_vec[1]
         ds = np.flip(np.sum(arry*timevector, axis=1))
         dv = np.array([arry[1][0] * dt, arry[0][0] * dt])
         updates = np.array([(0, 0), dv, ds])
         updates = np.rot90(updates, k=1, axes=(0, 1))
-        arry += updates
-        arry = np.around(arry, decimals=CALC_PRECISION)
-        vx = arry[0][1]
-        vy = arry[1][1]
+        disp_mtrx += updates
+        disp_mtrx = np.around(disp_mtrx, decimals=CALC_PRECISION)
+        vx = disp_mtrx[0][1]
+        vy = disp_mtrx[1][1]
 
         # Figure out new heading via arctan(vy/vx)
         if vx < 0:
@@ -63,31 +64,30 @@ class Physics:
                 heading = np.pi/-2
         else:
             heading = np.arctan(vy/vx)
-        return arry, heading
+        return disp_mtrx, heading
 
     @classmethod
-    def degreeprojectxy(cls, vec, heading=0):
+    def degreeprojectxy(cls, vec):
         '''
         Takes in a radius and theta in degrees
         Returns corresponding x,y values
         '''
-        print(f'vec: {vec}')
         vec[1] = (vec[1] / 180.0) * np.pi
-        print(f'vec: {vec}')
-        return cls.radianprojectxy(vec, heading=heading)
+        return cls.radianprojectxy(vec)
 
     @classmethod
-    def radianprojectxy(cls, vec, heading=0):
+    def radianprojectxy(cls, vec):
         '''
         Takes in a radius and theta in radians
         Returns corresponding x,y values
         '''
-        xy = np.array([vec[0] * np.cos(heading+vec[1]),
-                      vec[0] * np.sin(heading+vec[1])])
+        xy = np.array([vec[0] * np.cos(vec[1]),
+                      vec[0] * np.sin(vec[1])])
         return np.around(xy, decimals=CALC_PRECISION)
 
     @classmethod
     def rotateaxis(cls, xy, heading):
+        # print(xy)
         basis = np.array([(np.cos(heading), -np.sin(heading)),
                          (np.sin(heading), np.cos(heading))])
         return np.around(np.sum(xy*basis, axis=1), decimals=CALC_PRECISION)
