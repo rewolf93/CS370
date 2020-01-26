@@ -58,7 +58,25 @@ def test_degreeprojectxy():
 
 
 def test_accelerate():
-    pass
+    zeros1 = np.zeros((2, 3))
+    accel1 = np.array([1, 0])
+    simulation.Physics.accelerate(zeros1, accel1, heading=0)
+    assert np.allclose(zeros1, np.array([(.5, 0., 0.), (0., 0., 0.)]))
+
+    zeros2 = np.zeros((2, 3))
+    accel2 = np.array([1, 90])
+    simulation.Physics.accelerate(zeros2, accel2, heading=0)
+    assert np.allclose(zeros2, np.array([(0., 0., 0.), (.5, 0., 0.)]))
+
+    zeros3 = np.zeros((2, 3))
+    accel3 = np.array([1, 0])
+    simulation.Physics.accelerate(zeros3, accel3, heading=np.pi / 2)
+    assert np.allclose(zeros3, np.array([(0., 0., 0.), (.5, 0., 0.)]))
+
+    zeros4 = np.zeros((2, 3))
+    accel4 = np.array([1, 90])
+    simulation.Physics.accelerate(zeros4, accel4, heading=np.pi / 2)
+    assert np.allclose(zeros4, np.array([(-.5, 0., 0.), (0., 0., 0.)]))
 
 
 def test_displacement():

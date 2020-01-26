@@ -12,10 +12,19 @@ class Physics:
     def accelerate(cls, disp_matrix, accel_vec, heading=0):
         '''
         Takes a displacement matrix, acceleration vector, and current heading
-        The heading is the angle between the standard axis and the tilted axis of the object
+        The heading is the angle between the standard axis and the tilted axis
+        of the object
         Updates the displacement matrix in place
         '''
+        if np.issubdtype(accel_vec[0], np.signedinteger):
+            accel_vec = accel_vec.astype(float)
+        if np.issubdtype(disp_matrix[0][0], np.signedinteger):
+            disp_matrix = disp_matrix.astype(float)
+        print(f'accel_vec: {accel_vec}')
         da = cls.degreeprojectxy(accel_vec, heading=heading)
+        print(f'da: {da}')
+        print(f'heading: {heading}')
+        print(f'accel_vec: {accel_vec}')
         disp_matrix[0][0] = (disp_matrix[1][0] * 2 + da[0])/2
         disp_matrix[1][0] = (disp_matrix[1][0] * 2 + da[1])/2
 
@@ -25,7 +34,8 @@ class Physics:
         Calculates the displacement given a matrix of coefficients
         for the equation s = at^2 + bt^1 + c
         The matrix must be in the form np.array([(ax, bx, cx), (ay, by, cy)])
-        The new location is stored in the original matrix and given by cx and cy
+        The new location is stored in the original matrix and given
+        by cx and cy
         Returns an updated matrix and heading
         '''
         timevector = np.array([dt**i for i in range(arry.shape[1]-1, -1, -1)])
@@ -61,7 +71,9 @@ class Physics:
         Takes in a radius and theta in degrees
         Returns corresponding x,y values
         '''
-        vec[1] = (vec[1] / 180) * np.pi
+        print(f'vec: {vec}')
+        vec[1] = (vec[1] / 180.0) * np.pi
+        print(f'vec: {vec}')
         return cls.radianprojectxy(vec, heading=heading)
 
     @classmethod
