@@ -41,7 +41,7 @@ class Physics:
         arry[0][0] = a_vec[0]
         arry[1][0] = a_vec[1]
         s = np.sum(arry*timevector, axis=1)
-        dv = np.array([arry[1][0] * 2 * dt, arry[0][0]* 2 * dt])
+        dv = np.array([arry[1][0] * 2 * dt, arry[0][0] * 2 * dt])
         updates = np.array([(0, 0), dv, (0, 0)])
         updates = np.rot90(updates, k=1, axes=(0, 1))
         disp_mtrx += updates
@@ -116,7 +116,7 @@ class Moveable():
         Moves the object `count` times with the interval `dt`
         Yielads the object's location at the end of each pass
         '''
-        for i in range(count):
+        for _ in range(count):
             self.__disp_matrix, self.__heading = \
                 Physics.displacement(self.__disp_matrix, self.__heading, dt=dt)
             print(self.__disp_matrix)
