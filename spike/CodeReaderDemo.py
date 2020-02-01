@@ -44,9 +44,6 @@ class CodeParser():
             if len(terms) == 0:
                 self.code.pop(line)
             line += 1
-                    
-        self.analyzer()
-
 
     #Analyze
     def analyzer(self):
@@ -253,5 +250,5 @@ class CodeParser():
         
 
 #This is just for testing and running the code
-green = CodeParser("racer.txt")
-CodeParser.__init__
+#green = CodeParser("racer.txt")
+#CodeParser.__init__
