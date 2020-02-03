@@ -30,7 +30,7 @@ class Physics:
         for the equation s = at^2 + bt^1 + c
         The matrix must be in the form np.array([(ax, bx, cx), (ay, by, cy)])
         The new location is stored in the original matrix and given
-        by cx and cy
+        by cx and  cy
         Returns an updated matrix and heading
         '''
         arry = np.copy(disp_mtrx)
