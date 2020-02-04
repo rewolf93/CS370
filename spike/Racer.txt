@@ -1,12 +1,6 @@
-THROTTLE = 3
+set TURN 10
 
-1
-TURN + 2
+main
+sub TURN 1
 
-2
-THROTTLE + 2
-
-jmp 1 THROTTLE = 2
-jmp 2 THROTTLE = 5
-
-TURN = 5
+eqt TURN 9 jmp main

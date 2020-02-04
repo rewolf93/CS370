@@ -1,41 +1,27 @@
 class CodeParser():
 
     #Parsing variables
-    PORT = ''
-    OPERATION = ''
-    NUMBER = ''
-    JUMP = ''
-    FUNC = ''
-    T1 = ''
-    T2 = ''
-    #FUNCTIONS = []
-
-    path = ''
     SPEED = 0
     ANGLE = 0
 
     lineNum = 0
 
-    #Parsing libraries (or "keywords" if you wanna not sound like an arrogant prick)
-    OPERATIONS = ['+', '-', '*', '/', '=']
-    NUMBERS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-    WHITESPACE = ' '
+    #Parsing libraries (or "keywords")
     PORTS = ["THROTTLE", "TURN"]
 
 
-    #Initialize the CodeParser
+#Initialize the CodeParser
     def __init__(self, path):
-        self.path = "Racer.txt"
+        path = "Racer.txt"
         self.SPEED = 0
         self.ANGLE = 0
 
         #Open racer file
-        self.racer = open(self.path, "r")
+        racer = open(path, "r")
 
         #Read lines in
-        if self.racer.mode == "r":
-            self.code = self.racer.readlines()
-            self.racer.close()
+        self.code = racer.readlines()
+        racer.close()
 
         #Remove whitespace from file
         line = 0
@@ -43,9 +29,12 @@ class CodeParser():
             terms = self.code[line].split()
             if len(terms) == 0:
                 self.code.pop(line)
-            line += 1
+            else:
+                line += 1
 
-    #Analyze
+        #self.analyzer()
+
+#Analyze
     def analyzer(self):
 
         #Keep reading lines until you run out of lines
@@ -54,200 +43,174 @@ class CodeParser():
             #Split code line into terms
             terms = self.code[self.lineNum].split()
 
-            #If there are 5 terms go to conditional jumping
-            if len(terms) == 5:
-                self.JUMP = terms[0]
-                self.FUNC = terms[1]
-                self.T1 = terms[2]
-                self.OPERATION = terms[3]
-                self.T2 = terms[4]
+            #Go to add function
+            if terms[0] == "add":
+                self.addPort(terms)
 
-                print("Conditonally jumping")
-                self.cndJump()
+            if terms[0] == "sub":
+                self.subPort(terms)
 
-            #If there are 3 terms go to math
-            if len(terms) == 3:   
-                self.PORT = terms[0]
-                self.OPERATION = terms[1]
-                self.NUMBER = terms[2]
-                
-                print("Mathing")
-                self.oprSwitch()
+            if terms[0] == "mpy":
+                self.mpyPort(terms)
 
-            #If there are 2 terms go to jumping
-            if len(terms) == 2:
-                self.JUMP = terms[0]
-                self.FUNC = terms[1]
-                
-                print("Jumping")
-                self.jump()
+            if terms[0] == "div":
+                self.divPort(terms)
 
-            #If there is 1 term recognize that it is a function
-            if len(terms) == 1:
-                
-                print("Function")
-                #self.FUNCTIONS.append(terms[0])
+            if terms[0] == "set":
+                self.setPort(terms)
+
+            if terms[0] == "jmp":
+                self.jump(terms)
+
+            if terms[0] == "lst":
+                self.lstJump(terms)
+
+            if terms[0] == "lte":
+                self.lteJump(terms)
+
+            if terms[0] == "grt":
+                self.grtJump(terms)
+
+            if terms[0] == "gte":
+                self.gteJump(terms)
+
+            if terms[0] == "eqt":
+                self.eqtJump(terms)
+
+            if terms[0] == "nte":
+                self.nteJump(terms)
 
             #Print speed and angle after each line read
             print("Speed:", self.SPEED)
             print("Angle:", self.ANGLE)
             self.lineNum += 1
 
-    #Function to add number to port
-    def addPort(self):
+#Function to add number to port
+    def addPort(self, terms):
         
-        if self.PORT == "THROTTLE":
-            self.SPEED = self.SPEED + int(self.NUMBER)
+        if terms[1] == "THROTTLE":
+            self.SPEED = self.SPEED + int(terms[2])
             
-        if self.PORT == "TURN":
-            self.ANGLE = self.ANGLE + int(self.NUMBER)
+        if terms[1] == "TURN":
+            self.ANGLE = self.ANGLE + int(terms[2])
 
 
-    #Function to subtract number from port 
-    def subPort(self):
+#Function to subtract number from port 
+    def subPort(self, terms):
 
-        if self.PORT == "THROTTLE":
-            self.SPEED = self.SPEED - self.NUMBER
+        if terms[1] == "THROTTLE":
+            self.SPEED = self.SPEED - int(terms[2])
             
-        if self.PORT == "TURN":
-            self.ANGLE = self.ANGLE - self.NUMBER
+        if terms[1] == "TURN":
+            self.ANGLE = self.ANGLE - int(terms[2])
 
 
-    #Function to multply port by number
-    def mltPort(self):
+#Function to multply port by number
+    def mpyPort(self, terms):
 
-        if self.PORT == "THROTTLE":
-            self.SPEED = self.SPEED * self.NUMBER
+        if terms[1] == "THROTTLE":
+            self.SPEED = self.SPEED * int(terms[2])
             
-        if self.PORT == "TURN":
-            self.ANGLE = self.ANGLE * self.NUMBER
+        if terms[1] == "TURN":
+            self.ANGLE = self.ANGLE * int(terms[2])
 
         
-    #Function to divide port by number    
-    def divPort(self):
+#Function to divide port by number    
+    def divPort(self, terms):
 
-        if self.PORT == "THROTTLE":
-            self.SPEED = self.SPEED / self.NUMBER
+        if terms[1] == "THROTTLE":
+            self.SPEED = self.SPEED / int(terms[2])
             
-        if self.PORT == "TURN":
-            self.ANGLE = self.ANGLE / self.NUMBER
+        if terms[1] == "TURN":
+            self.ANGLE = self.ANGLE / int(terms[2])
 
 
-    #Function to set port to number
-    def setPort(self):
+#Function to set port to number
+    def setPort(self, terms):
 
-        if self.PORT == "THROTTLE":
-            self.SPEED = self.NUMBER
+        if terms[1] == "THROTTLE":
+            self.SPEED = int(terms[2])
             
-        if self.PORT == "TURN":
-            self.ANGLE = self.NUMBER
+        if terms[1] == "TURN":
+            self.ANGLE = int(terms[2])
 
-
-    #Switch to correct function
-    def oprSwitch(self):
-
-        #Cast variables to ints
-        self.NUMBER = int(self.NUMBER)
-        self.ANGLE = int(self.ANGLE)
-        self.SPEED = int(self.SPEED)
-
-        #Switcherrrrr
-        oprSwitcher = {
-            1: self.mltPort,
-            2: self.addPort,
-            4: self.subPort,
-            6: self.divPort,
-            20: self.setPort
-            }
-
-        #Turn ascii operation into numeral and then go to the switch
-        self.nOperation = ord(self.OPERATION) - 41
-        f = oprSwitcher.get(self.nOperation, "invalid operation")
-        f()
-
-    #Function to jump to spcific line
-    def jump(self):
+#Function to jump to spcific line
+    def jump(self, terms):
 
         #Find the function to jump to and then set lineNum to where it is in the txt file
         for num, i in enumerate(self.code):
-            terms = self.code[num].split()
-            if self.FUNC == terms[0]:
+            i = self.code[num].split()
+            if i[0] == terms[1]:
                 self.lineNum = num
                 return
 
-
-    #Function to jump to specific line conditionally
-    def cndJump(self):
-
-        #Set T1 and T2 to their ports
-        if self.T1 == "THROTTLE":
-            self.T1 = self.SPEED
-        if self.T1 == "TURN":
-            self.T1 = self.ANGLE
-
-        if self.T2 == "THROTTLE":
-            self.T2 = self.SPEED
-        if self.T2 == "TURN":
-            self.T2 = self.ANGLE
-
-        #Make T1 and T2 ints for comparison
-        self.T1 = int(self.T1)
-        self.T2 = int(self.T2)
-
-        #If T1 is less than T2, jump
-        if self.OPERATION == "<":
-            if self.T1 < self.T2:
-                for num, i in enumerate(self.code):
-                    terms = self.code[num].split()
-                    if self.FUNC == terms[0]:
-                        self.lineNum = num
-                        return
-
-        #If T1 is less than or equal to T2, jump    
-        if self.OPERATION == "<=":
-            if self.T1 <= self.T2:
-                for num, i in enumerate(self.code):
-                    terms = self.code[num].split()
-                    if self.FUNC == terms[0]:
-                        self.lineNum = num
-                        return
-
-        #If T1 is greater than T2, jump
-        if self.OPERATION == ">":
-            if self.T1 > self.T2:
-                for num, i in enumerate(self.code):
-                    terms = self.code[num].split()
-                    if self.FUNC == terms[0]:
-                        self.lineNum = num
-                        return
-                    
-        #If T1 is greater than or equal to T2, jump
-        if self.OPERATION == ">=":
-            if self.T1 >= self.T2:
-                for num, i in enumerate(self.code):
-                    terms = self.code[num].split()
-                    if self.FUNC == terms[0]:
-                        self.lineNum = num
-                        return
-
-        #If T1 is equal to T2, jump
-        if self.OPERATION == "=":
-            if self.T1 == self.T2:
-                for num, i in enumerate(self.code):
-                    terms = self.code[num].split()
-                    if self.FUNC == terms[0]:
-                        self.lineNum = num
-                        return
-
-        #If T1 is not equal to T2, jump
-        if self.OPERATION == "!=":
-            if self.T1 != self.T2:
-                for num, i in enumerate(self.code):
-                    terms = self.code[num].split()
-                    if self.FUNC == terms[0]:
-                        self.lineNum = num
-                        return
+#Function to change port to number
+    def portToNum(self, terms):
+        for i, term in enumerate(terms):
+            if terms[i] == "THROTTLE":
+                terms[i] = self.SPEED
+            if terms[i] == "TURN":
+                terms[i] = self.ANGLE
         
+#Function to jump if comparison is less than
+    def lstJump(self, terms):
+        self.portToNum(terms)
+        if int(terms[1]) < int(terms[2]):
+            for num, i in enumerate(self.code):
+                i = self.code[num].split()
+                if i[0] == terms[4]:
+                    self.lineNum = num
+                    return
+                
+#Function to jump if comparison is less than or equal to
+    def lteJump(self, terms):
+        self.portToNum(terms)
+        if int(terms[1]) <= int(terms[2]):
+            for num, i in enumerate(self.code):
+                i = self.code[num].split()
+                if i[0] == terms[4]:
+                    self.lineNum = num
+                    return
+                
+#Function to jump if comparison is greater than
+    def grtJump(self, terms):
+        self.portToNum(terms)
+        if int(terms[1]) > int(terms[2]):
+            for num, i in enumerate(self.code):
+                i = self.code[num].split()
+                if i[0] == terms[4]:
+                    self.lineNum = num
+                    return
+                
+#Function to jump if comparison is less than or equal to
+    def gteJump(self, terms):
+        self.portToNum(terms)
+        if int(terms[1]) >= int(terms[2]):
+            for num, i in enumerate(self.code):
+                i = self.code[num].split()
+                if i[0] == terms[4]:
+                    self.lineNum = num
+                    return
+
+#Function to jump if comparison is equal to
+    def eqtJump(self, terms):
+        self.portToNum(terms)
+        if int(terms[1]) == int(terms[2]):
+            for num, i in enumerate(self.code):
+                i = self.code[num].split()
+                if i[0] == terms[4]:
+                    self.lineNum = num
+                    return
+
+#Function to jump if comparison is not equal to
+    def nteJump(self, terms):
+        self.portToNum(terms)
+        if int(terms[1]) != int(terms[2]):
+            for num, i in enumerate(self.code):
+                i = self.code[num].split()
+                if i[0] == terms[4]:
+                    self.lineNum = num
+                    return      
 
 #This is just for testing and running the code
 #green = CodeParser("racer.txt")
