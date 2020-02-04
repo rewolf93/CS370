@@ -12,7 +12,6 @@ class CodeParser():
 
 #Initialize the CodeParser
     def __init__(self, path):
-        path = "Racer.txt"
         self.SPEED = 0
         self.ANGLE = 0
 
@@ -32,8 +31,6 @@ class CodeParser():
             else:
                 line += 1
 
-        #self.analyzer()
-
 #Analyze
     def analyzer(self):
 
@@ -47,37 +44,37 @@ class CodeParser():
             if terms[0] == "add":
                 self.addPort(terms)
 
-            if terms[0] == "sub":
+            elif terms[0] == "sub":
                 self.subPort(terms)
 
-            if terms[0] == "mpy":
+            elif terms[0] == "mpy":
                 self.mpyPort(terms)
 
-            if terms[0] == "div":
+            elif terms[0] == "div":
                 self.divPort(terms)
 
-            if terms[0] == "set":
+            elif terms[0] == "set":
                 self.setPort(terms)
 
-            if terms[0] == "jmp":
+            elif terms[0] == "jmp":
                 self.jump(terms)
 
-            if terms[0] == "lst":
+            elif terms[0] == "lst":
                 self.lstJump(terms)
 
-            if terms[0] == "lte":
+            elif terms[0] == "lte":
                 self.lteJump(terms)
 
-            if terms[0] == "grt":
+            elif terms[0] == "grt":
                 self.grtJump(terms)
 
-            if terms[0] == "gte":
+            elif terms[0] == "gte":
                 self.gteJump(terms)
 
-            if terms[0] == "eqt":
+            elif terms[0] == "eqt":
                 self.eqtJump(terms)
 
-            if terms[0] == "nte":
+            elif terms[0] == "nte":
                 self.nteJump(terms)
 
             #Print speed and angle after each line read
@@ -91,7 +88,7 @@ class CodeParser():
         if terms[1] == "THROTTLE":
             self.SPEED = self.SPEED + int(terms[2])
             
-        if terms[1] == "TURN":
+        elif terms[1] == "TURN":
             self.ANGLE = self.ANGLE + int(terms[2])
 
 
@@ -101,7 +98,7 @@ class CodeParser():
         if terms[1] == "THROTTLE":
             self.SPEED = self.SPEED - int(terms[2])
             
-        if terms[1] == "TURN":
+        elif terms[1] == "TURN":
             self.ANGLE = self.ANGLE - int(terms[2])
 
 
@@ -111,7 +108,7 @@ class CodeParser():
         if terms[1] == "THROTTLE":
             self.SPEED = self.SPEED * int(terms[2])
             
-        if terms[1] == "TURN":
+        elif terms[1] == "TURN":
             self.ANGLE = self.ANGLE * int(terms[2])
 
         
@@ -121,7 +118,7 @@ class CodeParser():
         if terms[1] == "THROTTLE":
             self.SPEED = self.SPEED / int(terms[2])
             
-        if terms[1] == "TURN":
+        elif terms[1] == "TURN":
             self.ANGLE = self.ANGLE / int(terms[2])
 
 
@@ -131,7 +128,7 @@ class CodeParser():
         if terms[1] == "THROTTLE":
             self.SPEED = int(terms[2])
             
-        if terms[1] == "TURN":
+        elif terms[1] == "TURN":
             self.ANGLE = int(terms[2])
 
 #Function to jump to spcific line
@@ -146,7 +143,7 @@ class CodeParser():
 
 #Function to change port to number
     def portToNum(self, terms):
-        for i, term in enumerate(terms):
+        for i, _ in enumerate(terms):
             if terms[i] == "THROTTLE":
                 terms[i] = self.SPEED
             if terms[i] == "TURN":
@@ -213,5 +210,4 @@ class CodeParser():
                     return      
 
 #This is just for testing and running the code
-#green = CodeParser("racer.txt")
-#CodeParser.__init__
+CodeParser.analyze()
