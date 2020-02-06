@@ -1,3 +1,4 @@
+import pytest
 import numpy as np
 from spike import simulation
 
@@ -62,28 +63,28 @@ def test_displacement():
     heading = 0
     disp_matrix, heading = simulation.Physics.displacement(
                            disp_matrix, heading, dt=1)
-    expected_result = np.array([(0.5, 0.5, 0.5), (0., 0., 0.)])
+    expected_result = np.array([(0.5, 1, 0.5), (0., 0., 0.)])
     assert np.allclose(disp_matrix, expected_result) and heading == 0
 
     disp_matrix = np.array([(0.0, 0, 0), (0.5, 0, 0)])
     heading = 0
     disp_matrix, heading = simulation.Physics.displacement(
                            disp_matrix, heading, dt=1)
-    expected_result = np.array([(0., 0., 0.), (0.5, 0.5, 0.5)])
+    expected_result = np.array([(0., 0., 0.), (0.5, 1, 0.5)])
     assert np.allclose(disp_matrix, expected_result) and heading == np.pi / 2
 
     disp_matrix = np.array([(0.5, 0, 0), (0, 0, 0)])
     heading = np.pi
     disp_matrix, heading = simulation.Physics.displacement(
                            disp_matrix, heading, dt=1)
-    expected_result = np.array([(0.5, -0.5, -0.5), (0., 0., 0.)])
+    expected_result = np.array([(0.5, -1, -0.5), (0., 0., 0.)])
     assert np.allclose(disp_matrix, expected_result) and heading == np.pi
 
     disp_matrix = np.array([(0., 0, 0), (0.5, 0, 0)])
     heading = np.pi / 2
     disp_matrix, heading = simulation.Physics.displacement(
                            disp_matrix, heading, dt=1)
-    expected_result = np.array([(0., -0.5, -0.5), (0.5, 0., 0.)])
+    expected_result = np.array([(0., -1, -0.5), (0.5, 0., 0.)])
     assert np.allclose(disp_matrix, expected_result) and heading == np.pi
 
     disp_matrix = np.array([(0., 0, 0), (0.0, 0, 0)])
@@ -92,3 +93,28 @@ def test_displacement():
                            disp_matrix, heading, dt=1)
     expected_result = np.array([(0., 0., 0.), (0., 0., 0.)])
     assert np.allclose(disp_matrix, expected_result) and heading == np.pi / 2
+
+    disp_matrix = np.array([(0.0, 1., 0), (0, 0, 0)])
+    heading = np.pi
+    disp_matrix, heading = simulation.Physics.displacement(
+                           disp_matrix, heading, dt=1)
+    expected_result = np.array([(0.0, -1., -1.), (0., 0., 0.)])
+    assert np.allclose(disp_matrix, expected_result) and np.allclose(heading, np.pi)
+
+
+@pytest.fixture()
+def moveable():
+    yield simulation.Moveable()
+
+
+def test_moveable(moveable):
+    for loc in moveable.move(5):
+        assert loc == (0, 0)
+
+    count = 0
+    moveable.set_acceleration(np.array([1, 0]))
+    locations = [(0.5*i*i, 0.0) for i in range(1, 6)]
+    for loc in moveable.move(5, dt=1):
+        print(count)
+        assert loc == locations[count]
+        count += 1

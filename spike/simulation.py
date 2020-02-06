@@ -40,10 +40,18 @@ class Physics:
         a_vec = cls.rotateaxis(a_vec, heading)
         arry[0][0] = a_vec[0]
         arry[1][0] = a_vec[1]
-        ds = np.flip(np.sum(arry*timevector, axis=1))
-        dv = np.array([arry[1][0] * dt, arry[0][0] * dt])
-        updates = np.array([(0, 0), dv, ds])
+        v_vec = np.array([arry[0][1], arry[1][1]])
+        v_vec = cls.rotateaxis(v_vec, heading)
+        arry[0][1] = v_vec[0]
+        arry[1][1] = v_vec[1]
+        s = np.sum(arry*timevector, axis=1)
+        dv = np.array([arry[1][0] * 2 * dt, arry[0][0] * 2 * dt])
+        updates = np.array([(0, 0), dv, (0, 0)])
         updates = np.rot90(updates, k=1, axes=(0, 1))
+        disp_mtrx[0][2] = s[0]
+        disp_mtrx[1][2] = s[1]
+        disp_mtrx[0][1] = v_vec[0]
+        disp_mtrx[1][1] = v_vec[1]
         disp_mtrx += updates
         disp_mtrx = np.around(disp_mtrx, decimals=CALC_PRECISION)
         vx = disp_mtrx[0][1]
@@ -87,7 +95,42 @@ class Physics:
 
     @classmethod
     def rotateaxis(cls, xy, heading):
-        # print(xy)
+        '''
+
+        '''
         basis = np.array([(np.cos(heading), -np.sin(heading)),
                          (np.sin(heading), np.cos(heading))])
         return np.around(np.sum(xy*basis, axis=1), decimals=CALC_PRECISION)
+
+
+class Moveable():
+    '''
+    A class that instanciates a moveable object and interfaces with the
+    Physics object to make the simulation easier to interact with
+    '''
+
+    def __init__(self, loc=(0, 0), accel=np.array([0, 0]), disp_matrix=None):
+        if disp_matrix:
+            self.__disp_matrix = disp_matrix
+        else:
+            self.__disp_matrix = np.array([(0, 0, loc[0]), (0, 0, loc[1])])
+            self.__heading = 0
+            self.set_acceleration(accel)
+
+    def move(self, count: int, dt=0.05):
+        '''
+        Moves the object `count` times with the interval `dt`
+        Yielads the object's location at the end of each pass
+        '''
+        for _ in range(count):
+            self.__disp_matrix, self.__heading = \
+                Physics.displacement(self.__disp_matrix, self.__heading, dt=dt)
+            print(self.__disp_matrix)
+
+            yield self.get_loc()
+
+    def get_loc(self):
+        return self.__disp_matrix[0][2], self.__disp_matrix[1][2]
+
+    def set_acceleration(self, accel):
+        self.__disp_matrix = Physics.accelerate(self.__disp_matrix, accel)
