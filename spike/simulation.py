@@ -30,7 +30,7 @@ class Physics:
         for the equation s = at^2 + bt^1 + c
         The matrix must be in the form np.array([(ax, bx, cx), (ay, by, cy)])
         The new location is stored in the original matrix and given
-        by cx and  cy
+        by cx and cy
         Returns an updated matrix and heading
         '''
         arry = np.copy(disp_mtrx)
@@ -40,13 +40,19 @@ class Physics:
         a_vec = cls.rotateaxis(a_vec, heading)
         arry[0][0] = a_vec[0]
         arry[1][0] = a_vec[1]
+        v_vec = np.array([arry[0][1], arry[1][1]])
+        v_vec = cls.rotateaxis(v_vec, heading)
+        arry[0][1] = v_vec[0]
+        arry[1][1] = v_vec[1]
         s = np.sum(arry*timevector, axis=1)
         dv = np.array([arry[1][0] * 2 * dt, arry[0][0] * 2 * dt])
         updates = np.array([(0, 0), dv, (0, 0)])
         updates = np.rot90(updates, k=1, axes=(0, 1))
-        disp_mtrx += updates
         disp_mtrx[0][2] = s[0]
         disp_mtrx[1][2] = s[1]
+        disp_mtrx[0][1] = v_vec[0]
+        disp_mtrx[1][1] = v_vec[1]
+        disp_mtrx += updates
         disp_mtrx = np.around(disp_mtrx, decimals=CALC_PRECISION)
         vx = disp_mtrx[0][1]
         vy = disp_mtrx[1][1]

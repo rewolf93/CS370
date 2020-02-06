@@ -94,6 +94,13 @@ def test_displacement():
     expected_result = np.array([(0., 0., 0.), (0., 0., 0.)])
     assert np.allclose(disp_matrix, expected_result) and heading == np.pi / 2
 
+    disp_matrix = np.array([(0.0, 1., 0), (0, 0, 0)])
+    heading = np.pi
+    disp_matrix, heading = simulation.Physics.displacement(
+                           disp_matrix, heading, dt=1)
+    expected_result = np.array([(0.0, -1., -1.), (0., 0., 0.)])
+    assert np.allclose(disp_matrix, expected_result) and np.allclose(heading, np.pi)
+
 
 @pytest.fixture()
 def moveable():
