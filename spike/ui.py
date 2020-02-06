@@ -45,7 +45,6 @@ class Application(tk.Frame):
         self.screen.fill(pg.Color(255, 255, 255))
 
         pg.display.init()
-        #pg.display.update()
 
     def load_map(self):
         self.screen.fill(pg.Color(0, 150, 0))
@@ -62,7 +61,8 @@ class Application(tk.Frame):
         self.button3["state"] = "normal"
 
     def update(self):
-        self.allgroup.clear(self.screen, self.track)
+        self.screen.fill(pg.Color(0, 150, 0))
+        self.screen.blit(self.track, (50, 50))
         self.allgroup.update()
         self.allgroup.draw(self.screen)
         pg.display.flip()
