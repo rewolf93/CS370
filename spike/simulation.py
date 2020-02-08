@@ -171,7 +171,7 @@ class Moveable():
         '''
 
     def get_loc(self):
-        return self.position[0], self.position[1]
+        return int(self.position[0]), int(self.position[1])
 
     def set_acceleration(self, accel):
         #print(f'accelerating: {accel}')

@@ -12,6 +12,7 @@ class Car(pg.sprite.Sprite, Moveable):
         self.image = pg.transform.rotate(self.image, -90)
         self._originalimage = self.image
         self.rect = self.image.get_rect()
+        self.old_rect = self.image.get_rect()
         self.update()
 
     def move(self):
@@ -20,6 +21,7 @@ class Car(pg.sprite.Sprite, Moveable):
         self.update()
 
     def update(self):
+        self.old_rect.center = self.rect.center
         self.pos = Moveable.get_loc(self)
         rotation = -(Moveable.get_direction(self) / np.pi) * 180
         self.image = pg.transform.rotate(self._originalimage, rotation)
