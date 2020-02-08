@@ -58,6 +58,7 @@ class Physics:
         vy = disp_mtrx[1][1]
 
         # Figure out new heading via arctan(vy/vx)
+
         if vx < 0:
             if vy < 0:
                 heading = np.arctan(vy/vx) - np.pi
@@ -72,6 +73,7 @@ class Physics:
                 heading = np.pi/-2
         else:
             heading = np.arctan(vy/vx)
+
         return disp_mtrx, heading
 
     @classmethod
@@ -100,7 +102,11 @@ class Physics:
         '''
         basis = np.array([(np.cos(heading), -np.sin(heading)),
                          (np.sin(heading), np.cos(heading))])
-        return np.around(np.sum(xy*basis, axis=1), decimals=CALC_PRECISION)
+        calc = xy*basis
+        #print(f'heading: {heading}')
+        #print(f'basis: {basis}')
+        #print(f'rotated: {calc}')
+        return np.around(np.sum(calc, axis=1), decimals=CALC_PRECISION)
 
 
 class Moveable():
@@ -109,28 +115,75 @@ class Moveable():
     Physics object to make the simulation easier to interact with
     '''
 
-    def __init__(self, loc=(0, 0), accel=np.array([0, 0]), disp_matrix=None):
-        if disp_matrix:
-            self.__disp_matrix = disp_matrix
+    def __init__(self, loc=np.array([0., 0]), accel=np.array([0., 0]), vel=np.array([0., 0])):
+        self.heading = 0
+        self.theta = 0
+        self.phi = accel[1] * np.pi / 180
+        self.acceleration = np.array(accel)
+        self.velocity = np.array(vel)
+        self.position = np.array(loc)
+
+    def move(self, dt=0.05):
+        '''
+        Calculates the displacement given a matrix of coefficients
+        for the equation s = at^2 + bt^1 + c
+        The matrix must be in the form np.array([(ax, bx, cx), (ay, by, cy)])
+        The new location is stored in the original matrix and given
+        by cx and cy
+        Returns an updated matrix and heading
+        '''
+        #print('\n')
+        self.theta += self.phi
+        arry = np.array([self.acceleration, self.velocity])
+        #print(f'arry: {arry}')
+        timevector = np.array([float(dt**2), dt])
+        calc = arry*timevector
+        #print(f'calc: {calc}')
+        ds = np.sum(calc)
+        dv = self.acceleration * dt
+        #print(f'dv: {dv}')
+        #print(f'vel: {self.velocity}')
+        self.velocity += dv
+        #print(f'velocity: {self.velocity}')
+        #print(f'theta, phi: {self.theta}, {self.phi}')
+        real_ds = Physics.rotateaxis(np.array([ds, 0]), self.theta)
+        #print(f'ds: {ds}')
+        #print(f'real_ds: {real_ds}')
+        self.position += real_ds
+        #print(self.position)
+        # Figure out new heading via arctan(vy/vx)
+        # vx, vy = Physics.rotateaxis(self.velocity, self.theta)
+        '''
+        if vx < 0:
+            if vy < 0:
+                self.theta = np.arctan(vy/vx) - np.pi
+            else:
+                self.theta = np.arctan(vy/vx) + np.pi
+        elif vx == 0:
+            if vy == 0:
+                pass
+            elif vy > 0:
+                self.theta = np.pi/2
+            else:
+                self.theta = np.pi/-2
         else:
-            self.__disp_matrix = np.array([(0, 0, loc[0]), (0, 0, loc[1])])
-            self.__heading = 0
-            self.set_acceleration(accel)
-
-    def move(self, count: int, dt=0.05):
+            self.theta = np.arctan(vy/vx)
         '''
-        Moves the object `count` times with the interval `dt`
-        Yielads the object's location at the end of each pass
-        '''
-        for _ in range(count):
-            self.__disp_matrix, self.__heading = \
-                Physics.displacement(self.__disp_matrix, self.__heading, dt=dt)
-            print(self.__disp_matrix)
-
-            yield self.get_loc()
 
     def get_loc(self):
-        return self.__disp_matrix[0][2], self.__disp_matrix[1][2]
+        return self.position[0], self.position[1]
 
     def set_acceleration(self, accel):
-        self.__disp_matrix = Physics.accelerate(self.__disp_matrix, accel)
+        #print(f'accelerating: {accel}')
+        self.phi = accel[1] * np.pi / 180
+        self.acceleration = np.array([accel[0]/2., 0])
+        #print(f'finished accelerating: {self.acceleration}')
+
+    def get_velocity(self):
+        return self.velocity[0], self.velocity[1]
+
+    def get_heading(self):
+        return self.phi
+
+    def get_direction(self):
+        return self.theta
