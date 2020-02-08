@@ -23,6 +23,7 @@ class Application(tk.Frame):
         self.screen.blit(self.track, (50, 50))
         self.after(30, self.update)
         Car.groups = self.allgroup, self.cargroup
+        pg.mixer.init()
         self.after(30, self.update)
 
     def create_buttons(self):
@@ -32,8 +33,8 @@ class Application(tk.Frame):
         self.button1.grid(row=0)
         self.button2 = tk.Button(self.button_bar, text="Go!", state="disabled", command=self.start_button)
         self.button2.grid(row=1)
-        #self.button3 = tk.Button(self.button_bar, text="Tour de force", state="disabled", command=self.demo_all)
-        #self.button3.grid(row=3)
+        self.button4 = tk.Button(self.button_bar, text="Play Sound", state="normal", command=self.play_sound)
+        self.button4.grid(row=4)
 
     def create_game_window(self):
         self.game_window = tk.Frame(self, width=900, height=600)
@@ -99,3 +100,7 @@ class Application(tk.Frame):
     def demo_all(self):
         self.car.x += 5
         self.update()
+
+    def play_sound(self):
+        pg.mixer.music.load("spike/free_song.mp3")
+        pg.mixer.music.play(loops=0, start=180)
