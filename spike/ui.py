@@ -13,6 +13,7 @@ class Application(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
         self.master = master
+        self.color = False
         self.grid()
         self.create_buttons()
         self.create_game_window()
@@ -21,9 +22,8 @@ class Application(tk.Frame):
         self.screen.fill(pg.Color(0, 150, 0))
         self.track = pg.image.load("spike/track.png")
         self.screen.blit(self.track, (50, 50))
-        self.after(30, self.update)
-        Car.groups = self.allgroup, self.cargroup
         pg.mixer.init()
+        Car.groups = self.cargroup
         self.after(30, self.update)
 
     def create_buttons(self):
@@ -31,10 +31,12 @@ class Application(tk.Frame):
         self.button_bar.grid(row=0, column=0)
         self.button1 = tk.Button(self.button_bar, text="Load Car", state="normal", command=self.load_car)
         self.button1.grid(row=0)
-        self.button2 = tk.Button(self.button_bar, text="Go!", state="disabled", command=self.start_button)
+        self.button2 = tk.Button(self.button_bar, text="Go!", state="normal", command=self.start_button)
         self.button2.grid(row=1)
         self.button4 = tk.Button(self.button_bar, text="Play Sound", state="normal", command=self.play_sound)
         self.button4.grid(row=4)
+        self.button3 = tk.Button(self.button_bar, text="Go (check color)!", state="normal", command=self.start_button2)
+        self.button3.grid(row=2)
 
     def create_game_window(self):
         self.game_window = tk.Frame(self, width=900, height=600)
@@ -69,23 +71,35 @@ class Application(tk.Frame):
 
     def update(self):
         self.redraw()
+    
+    def start_button2(self):
+        self.color = True
+        self.start_button()
 
     def start_button(self):
         self.car.accelerate([120, 0])
         for _ in range(325):
             self.car.move()
+            if self.color:
+                self.checkColor(self.car)
             self.redraw()
         self.car.accelerate([0, 0.7])
         for _ in range(255):
             self.car.move()
+            if self.color:
+                self.checkColor(self.car)
             self.redraw()
         self.car.accelerate([0, 0.])
         for _ in range(170):
             self.car.move()
+            if self.color:
+                self.checkColor(self.car)
             self.redraw()
         self.car.accelerate([0, 0.7])
-        for _ in range(255):
+        for _ in range(225):
             self.car.move()
+            if self.color:
+                self.checkColor(self.car)
             self.redraw()
         self.car.kill()
         self.car = Car("spike/car.png", [195., 80])
@@ -94,7 +108,7 @@ class Application(tk.Frame):
     def redraw(self):
         self.screen.fill(pg.Color(0, 150, 0))
         self.screen.blit(self.track, (50, 50))
-        self.allgroup.draw(self.screen)
+        self.cargroup.draw(self.screen)
         pg.display.flip()
 
     def demo_all(self):
@@ -104,3 +118,12 @@ class Application(tk.Frame):
     def play_sound(self):
         pg.mixer.music.load("spike/free_song.mp3")
         pg.mixer.music.play(loops=0, start=180)
+    
+    def checkColor(self, sprite):
+        center = sprite.get_loc()
+        #center = (center[0] + 20, center[1])
+        #print(center)
+        self.cargroup.clear(self.screen, self.screen)
+        color = self.screen.get_at(center)
+        if color == (0, 150, 0, 255):
+            print('Off track')
