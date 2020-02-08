@@ -22,7 +22,7 @@ class Application(tk.Frame):
         self.screen.fill(pg.Color(0, 150, 0))
         self.track = pg.image.load("spike/track.png")
         self.screen.blit(self.track, (50, 50))
-        self.after(30, self.update)
+        pg.mixer.init()
         Car.groups = self.cargroup
         self.after(30, self.update)
 
@@ -33,10 +33,10 @@ class Application(tk.Frame):
         self.button1.grid(row=0)
         self.button2 = tk.Button(self.button_bar, text="Go!", state="normal", command=self.start_button)
         self.button2.grid(row=1)
+        self.button4 = tk.Button(self.button_bar, text="Play Sound", state="normal", command=self.play_sound)
+        self.button4.grid(row=4)
         self.button3 = tk.Button(self.button_bar, text="Go (check color)!", state="normal", command=self.start_button2)
         self.button3.grid(row=2)
-        #self.button3 = tk.Button(self.button_bar, text="Tour de force", state="disabled", command=self.demo_all)
-        #self.button3.grid(row=3)
 
     def create_game_window(self):
         self.game_window = tk.Frame(self, width=900, height=600)
@@ -114,6 +114,10 @@ class Application(tk.Frame):
     def demo_all(self):
         self.car.x += 5
         self.update()
+
+    def play_sound(self):
+        pg.mixer.music.load("spike/free_song.mp3")
+        pg.mixer.music.play(loops=0, start=180)
     
     def checkColor(self, sprite):
         center = sprite.get_loc()
@@ -123,4 +127,3 @@ class Application(tk.Frame):
         color = self.screen.get_at(center)
         if color == (0, 150, 0, 255):
             print('Off track')
-
