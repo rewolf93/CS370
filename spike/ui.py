@@ -3,6 +3,7 @@ import pygame as pg
 import platform
 import os
 from car import Car
+from tkinter import messagebox
 
 
 class Application(tk.Frame):
@@ -37,6 +38,8 @@ class Application(tk.Frame):
         self.button4.grid(row=4)
         self.button3 = tk.Button(self.button_bar, text="Go (check color)!", state="normal", command=self.start_button2)
         self.button3.grid(row=2)
+        self.button3 = tk.Button(self.button_bar, text="Error!", state="normal", command=self.error)
+        self.button3.grid(row=6)
 
     def create_game_window(self):
         self.game_window = tk.Frame(self, width=900, height=600)
@@ -127,3 +130,6 @@ class Application(tk.Frame):
         color = self.screen.get_at(center)
         if color == (0, 150, 0, 255):
             print('Off track')
+
+    def error(self):
+        messagebox.showerror(title="Error", message="This is a test error.")
