@@ -2,7 +2,7 @@ import tkinter as tk
 import pygame as pg
 import platform
 import os
-from car import Car
+from car import *
 
 
 class Application(tk.Frame):
@@ -14,6 +14,7 @@ class Application(tk.Frame):
         super().__init__(master)
         self.master = master
         self.color = False
+        self.car = None
         self.grid()
         self.create_buttons()
         self.create_game_window()
@@ -24,6 +25,7 @@ class Application(tk.Frame):
         self.screen.blit(self.track, (50, 50))
         pg.mixer.init()
         Car.groups = self.cargroup
+        SuperCar.groups = self.cargroup
         self.after(30, self.update)
 
     def create_buttons(self):
@@ -37,6 +39,8 @@ class Application(tk.Frame):
         self.button4.grid(row=4)
         self.button3 = tk.Button(self.button_bar, text="Go (check color)!", state="normal", command=self.start_button2)
         self.button3.grid(row=2)
+        self.button3 = tk.Button(self.button_bar, text="All", state="normal", command=self.run_all)
+        self.button3.grid(row=7)
 
     def create_game_window(self):
         self.game_window = tk.Frame(self, width=900, height=600)
@@ -127,3 +131,14 @@ class Application(tk.Frame):
         color = self.screen.get_at(center)
         if color == (0, 150, 0, 255):
             print('Off track')
+
+    def run_all(self):
+        if self.car:
+            self.car.kill()
+        self.car = SuperCar("spike/car.png", 'spike/SuperRacer.txt', startpos=[195., 80])
+        self.redraw()
+        running = True
+        while running:
+            #print(running)
+            running = self.car.move()
+            self.redraw()
