@@ -3,6 +3,8 @@ import pygame as pg
 import platform
 import os
 from car import *
+import pickle as pkl
+from codeReader import CodeParser
 
 
 class Application(tk.Frame):
@@ -35,12 +37,14 @@ class Application(tk.Frame):
         self.button1.grid(row=0)
         self.button2 = tk.Button(self.button_bar, text="Go!", state="normal", command=self.start_button)
         self.button2.grid(row=1)
-        self.button4 = tk.Button(self.button_bar, text="Play Sound", state="normal", command=self.play_sound)
-        self.button4.grid(row=4)
         self.button3 = tk.Button(self.button_bar, text="Go (check color)!", state="normal", command=self.start_button2)
         self.button3.grid(row=2)
         self.button3 = tk.Button(self.button_bar, text="All", state="normal", command=self.run_all)
         self.button3.grid(row=7)
+        self.button3 = tk.Button(self.button_bar, text="Assembly Demo", state="normal", command=self.assembly_demo)
+        self.button3.grid(row=3)
+        self.button4 = tk.Button(self.button_bar, text="Play Sound", state="normal", command=self.play_sound)
+        self.button4.grid(row=4)
 
     def create_game_window(self):
         self.game_window = tk.Frame(self, width=900, height=600)
@@ -132,6 +136,7 @@ class Application(tk.Frame):
         if color == (0, 150, 0, 255):
             print('Off track')
 
+
     def run_all(self):
         if self.car:
             self.car.kill()
@@ -142,3 +147,17 @@ class Application(tk.Frame):
             #print(running)
             running = self.car.move()
             self.redraw()
+
+    def assembly_demo(self):
+        parser = CodeParser('spike/Racer.txt')
+        print(f'Speed of racer is {parser.SPEED}')
+        print(f'Angle of racer is {parser.ANGLE}')
+        print(f'Running racer')
+        parser.analyzer()
+        print(f'Speed of racer is now {parser.SPEED}')
+        print(f'Angle of racer is now {parser.ANGLE}')
+        print(f'Saving racer binary to desktop')
+        path = os.path.join(os.environ['USERPROFILE'], 'Desktop', 'racer.pkl')
+        fle = open(path, 'wb')
+        pkl.dump(parser, fle)
+
