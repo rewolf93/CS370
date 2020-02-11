@@ -78,8 +78,8 @@ class CodeParser():
                 self.nteJump(terms)
 
             #Print speed and angle after each line read
-            print("Speed:", self.SPEED)
-            print("Angle:", self.ANGLE)
+            #print("Speed:", self.SPEED)
+            #print("Angle:", self.ANGLE)
             self.lineNum += 1
 
 #Function to add number to port
@@ -210,4 +210,4 @@ class CodeParser():
                     return      
 
 #This is just for testing and running the code
-CodeParser.analyze()
+#CodeParser.analyze()

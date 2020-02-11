@@ -2,8 +2,10 @@ import tkinter as tk
 import pygame as pg
 import platform
 import os
-from car import Car
 from tkinter import messagebox
+from car import *
+import pickle as pkl
+from codeReader import CodeParser
 
 
 class Application(tk.Frame):
@@ -15,6 +17,7 @@ class Application(tk.Frame):
         super().__init__(master)
         self.master = master
         self.color = False
+        self.car = None
         self.grid()
         self.create_buttons()
         self.create_game_window()
@@ -25,6 +28,7 @@ class Application(tk.Frame):
         self.screen.blit(self.track, (50, 50))
         pg.mixer.init()
         Car.groups = self.cargroup
+        SuperCar.groups = self.cargroup
         self.after(30, self.update)
 
     def create_buttons(self):
@@ -34,12 +38,16 @@ class Application(tk.Frame):
         self.button1.grid(row=0)
         self.button2 = tk.Button(self.button_bar, text="Go!", state="normal", command=self.start_button)
         self.button2.grid(row=1)
-        self.button4 = tk.Button(self.button_bar, text="Play Sound", state="normal", command=self.play_sound)
-        self.button4.grid(row=4)
         self.button3 = tk.Button(self.button_bar, text="Go (check color)!", state="normal", command=self.start_button2)
         self.button3.grid(row=2)
+        self.button3 = tk.Button(self.button_bar, text="Assembly Demo", state="normal", command=self.assembly_demo)
+        self.button3.grid(row=3)
+        self.button4 = tk.Button(self.button_bar, text="Play Sound", state="normal", command=self.play_sound)
+        self.button4.grid(row=4)
         self.button3 = tk.Button(self.button_bar, text="Error!", state="normal", command=self.error)
         self.button3.grid(row=6)
+        self.button3 = tk.Button(self.button_bar, text="All", state="normal", command=self.run_all)
+        self.button3.grid(row=7)
 
     def create_game_window(self):
         self.game_window = tk.Frame(self, width=900, height=600)
@@ -133,3 +141,27 @@ class Application(tk.Frame):
 
     def error(self):
         messagebox.showerror(title="Error", message="This is a test error.")
+
+    def run_all(self):
+        if self.car:
+            self.car.kill()
+        self.car = SuperCar("spike/car.png", 'spike/SuperRacer.txt', startpos=[195., 80])
+        self.redraw()
+        running = True
+        while running:
+            #print(running)
+            running = self.car.move()
+            self.redraw()
+
+    def assembly_demo(self):
+        parser = CodeParser('spike/Racer.txt')
+        print(f'Speed of racer is {parser.SPEED}')
+        print(f'Angle of racer is {parser.ANGLE}')
+        print(f'Running racer')
+        parser.analyzer()
+        print(f'Speed of racer is now {parser.SPEED}')
+        print(f'Angle of racer is now {parser.ANGLE}')
+        print(f'Saving racer binary to desktop')
+        path = os.path.join(os.environ['USERPROFILE'], 'Desktop', 'racer.pkl')
+        fle = open(path, 'wb')
+        pkl.dump(parser, fle)

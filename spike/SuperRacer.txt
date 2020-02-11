@@ -1,0 +1,12 @@
+set THROTTLE 120
+noop 325
+
+set THROTTLE 0
+set TURN 70
+noop 255
+
+set TURN 0
+noop 170
+
+set TURN 70
+noop 225

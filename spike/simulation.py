@@ -179,6 +179,14 @@ class Moveable():
         self.acceleration = np.array([accel[0]/2., 0])
         #print(f'finished accelerating: {self.acceleration}')
 
+    def update_acceleration(self, magnitude=None, direction=None):
+        if magnitude and direction:
+            self.set_acceleration([magnitude, direction])
+        elif magnitude is None:
+            self.set_acceleration([self.acceleration[0] * 2., direction])
+        elif direction is None:
+            self.set_acceleration([magnitude, self.acceleration[1] / np.pi * 180])
+
     def get_velocity(self):
         return self.velocity[0], self.velocity[1]
 
