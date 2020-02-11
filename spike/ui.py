@@ -2,8 +2,8 @@ import tkinter as tk
 import pygame as pg
 import platform
 import os
+from car import *
 import pickle as pkl
-from car import Car
 from codeReader import CodeParser
 
 
@@ -16,6 +16,7 @@ class Application(tk.Frame):
         super().__init__(master)
         self.master = master
         self.color = False
+        self.car = None
         self.grid()
         self.create_buttons()
         self.create_game_window()
@@ -26,6 +27,7 @@ class Application(tk.Frame):
         self.screen.blit(self.track, (50, 50))
         pg.mixer.init()
         Car.groups = self.cargroup
+        SuperCar.groups = self.cargroup
         self.after(30, self.update)
 
     def create_buttons(self):
@@ -37,6 +39,8 @@ class Application(tk.Frame):
         self.button2.grid(row=1)
         self.button3 = tk.Button(self.button_bar, text="Go (check color)!", state="normal", command=self.start_button2)
         self.button3.grid(row=2)
+        self.button3 = tk.Button(self.button_bar, text="All", state="normal", command=self.run_all)
+        self.button3.grid(row=7)
         self.button3 = tk.Button(self.button_bar, text="Assembly Demo", state="normal", command=self.assembly_demo)
         self.button3.grid(row=3)
         self.button4 = tk.Button(self.button_bar, text="Play Sound", state="normal", command=self.play_sound)
@@ -132,6 +136,18 @@ class Application(tk.Frame):
         if color == (0, 150, 0, 255):
             print('Off track')
 
+
+    def run_all(self):
+        if self.car:
+            self.car.kill()
+        self.car = SuperCar("spike/car.png", 'spike/SuperRacer.txt', startpos=[195., 80])
+        self.redraw()
+        running = True
+        while running:
+            #print(running)
+            running = self.car.move()
+            self.redraw()
+
     def assembly_demo(self):
         parser = CodeParser('spike/Racer.txt')
         print(f'Speed of racer is {parser.SPEED}')
@@ -144,3 +160,4 @@ class Application(tk.Frame):
         path = os.path.join(os.environ['USERPROFILE'], 'Desktop', 'racer.pkl')
         fle = open(path, 'wb')
         pkl.dump(parser, fle)
+
